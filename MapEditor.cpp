@@ -25,11 +25,12 @@ void MapEditor::Init()
     Open();
 }
 
+
+//Lis les fichiers de la map
 void MapEditor::Open() 
 {
     cout << "map/tiles/tiles" + to_string(actualMapX + actualMapY * (WINDOW_WIDTH / 32)) + ".txt";
 
-    //Lis le fichier map.txt
     fstream newfile;
     newfile.open("map/map.txt", ios::in);
     if (newfile.is_open())
@@ -50,7 +51,6 @@ void MapEditor::Open()
         newfile.close();
     }
 
-    //Lis le fichier map.txt
     newfile.open("map/tiles/tiles" + to_string(actualMapX + actualMapY * (WINDOW_WIDTH / 32)) + ".txt", ios::in);
     if (newfile.is_open())
     {
@@ -70,8 +70,6 @@ void MapEditor::Open()
         newfile.close();
     }
 
-
-    //Lis le fichier items.txt
     newfile.open("map/items/items" + to_string(actualMapX + actualMapY * (WINDOW_WIDTH / 32)) + ".txt", ios::in);
     if (newfile.is_open())
     {
@@ -90,8 +88,7 @@ void MapEditor::Open()
         }
         newfile.close();
     }
-
-    //Lis le fichier Entities.txt
+    
     newfile.open("map/entities/Entities" + to_string(actualMapX + actualMapY * (WINDOW_WIDTH / 32)) + ".txt", ios::in);
     if (newfile.is_open())
     {
@@ -208,7 +205,7 @@ void MapEditor::Loop()
     sf::Texture textures[3][100];
 
 
-    //Load les textures et les sprites du dossier tiles
+    //Load les textures et les sprites
     int nbTiles = 0;
     for (const auto& dirEntry : recursive_directory_iterator("texture/tiles/")) 
     {
@@ -225,8 +222,6 @@ void MapEditor::Loop()
         nbTiles++;
     }
 
-
-    //Load les textures et les sprites du dossier items
     int nbItems = 0;
     for (const auto& dirEntry : recursive_directory_iterator("texture/items/"))
     {
@@ -242,7 +237,6 @@ void MapEditor::Loop()
         nbItems++;
     }
 
-    //load les texture et les sprite du dossier entities 
     int nbEntities = 0;
     for (const auto& dirEntry : recursive_directory_iterator("texture/Entities/"))
     {
@@ -266,7 +260,7 @@ void MapEditor::Loop()
         {
 
 
-            //Retour à l'écran du jeu lors de la fermeture de l'éditeur
+            //Retourne sur le jeu à la fermeture
             if (this->event.type == sf::Event::Closed)
             {
                 this->Save();
@@ -274,6 +268,7 @@ void MapEditor::Loop()
                 Game game;
             }
 
+            //De même mais lorsqu'on appuie sur échap
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             {
                 this->Save();
@@ -281,6 +276,7 @@ void MapEditor::Loop()
                 Game game;
             }
 
+            //Pour se délacer entre les zones
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && actualMapY != 0)
             {
                 if (map[actualMapY - 1][actualMapX] == 1) {
@@ -321,12 +317,12 @@ void MapEditor::Loop()
                 }
             }
 
-
+            //Test des évents souris
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
 
 
-                //Récupère la position de la souris et change la tile
+                //Change la tile
                 sf::Vector2i localPosition = sf::Mouse::getPosition(*window);
                 if (localPosition.x > 160 && localPosition.x < WINDOW_WIDTH + 160 && localPosition.y > 0 && localPosition.y < WINDOW_HEIGHT)
                 {
@@ -339,7 +335,7 @@ void MapEditor::Loop()
                 }
 
 
-                //Test d'entrée dans le choix de tile ou d'items
+                //Entrée dans les menus de choix de tile
                 if (localPosition.x < 160 && localPosition.x > 0 && localPosition.y > 0 && localPosition.y < 64)
                 {
                     inMenu = 1;
@@ -409,6 +405,7 @@ void MapEditor::Loop()
                     this->window->display();
                 }
 
+                //Créer de nouvelles zones autour
                 if (localPosition.x < WINDOW_WIDTH + 320 && localPosition.x > WINDOW_WIDTH + 160 && localPosition.y > 0 && localPosition.y < 64)
                 {
                     if (actualMapY != 0)
@@ -454,6 +451,7 @@ void MapEditor::Loop()
                     }
                 }
 
+                //Clear la zone
                 if (localPosition.x < WINDOW_WIDTH + 320 && localPosition.x > WINDOW_WIDTH + 160 && localPosition.y > WINDOW_HEIGHT - 64 && localPosition.y < WINDOW_HEIGHT)
                 {
                     map[actualMapY][actualMapX] = 0;
@@ -463,6 +461,7 @@ void MapEditor::Loop()
                     this->Open();
                 }
 
+                //Supprime une zone
                 if (localPosition.x < WINDOW_WIDTH + 320 && localPosition.x > WINDOW_WIDTH + 160 && localPosition.y > WINDOW_HEIGHT - 128 && localPosition.y < WINDOW_HEIGHT - 64)
                 {
                     for (int r = 0; r < WINDOW_HEIGHT / 32; r++)
@@ -478,7 +477,7 @@ void MapEditor::Loop()
             }
 
 
-            //Test de suppression de la tile
+            //Supprime la tile
             if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
             {
 
@@ -497,6 +496,7 @@ void MapEditor::Loop()
         sprites[typeOfSprite][actualTexture].setPosition(160 / 2 - 16, WINDOW_HEIGHT / 2 - 16);
         this->window->draw(sprites[typeOfSprite][actualTexture]);
 
+        //Dessine les textes
         window->draw(text);
         window->draw(textTiles);
         window->draw(textItems);
